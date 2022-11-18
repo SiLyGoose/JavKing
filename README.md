@@ -10,7 +10,7 @@ Discord bot that plays YouTube videos and Spotify Tracks.
 [Invite JavKing to join your server](https://discordapp.com/api/oauth2/authorize?client_id=694655522237972510&permissions=8&scope=bot)
 <!-- ![# JavKing](img link) -->
 <p align="center">
-    <a href="https://discordapp.com/api/oauth2/authorize?client_id=694655522237972510&permissions=8&scope=bot" target="_blank">
+    <a href="https://simonly.herokuapp.com/projects/JavKing/home.html" target="_blank">
         <img src="img/JavKing.png" width="50%" display="block" margin-left="auto" margin-right="auto">
     </a>
 </p>
