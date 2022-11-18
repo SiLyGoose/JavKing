@@ -1,0 +1,12 @@
+out
+host
+target
+
+.settings
+.idea
+.project
+.classpath
+
+server.log
+
+src/main/resources
