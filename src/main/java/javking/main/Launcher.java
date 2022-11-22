@@ -50,6 +50,7 @@ public class Launcher {
         Logger logger = LoggerFactory.getLogger(Launcher.class);
 
         try {
+            String prefix = PropertiesLoadingService.loadProperty("PREFIX");
             String discordToken = PropertiesLoadingService.loadProperty("TOKEN");
             String youTubeCredentials = PropertiesLoadingService.loadProperty("V3_API_KEY");
 
@@ -100,8 +101,9 @@ public class Launcher {
 
             javking.registerListeners();
 
-            shardManager.setStatus(OnlineStatus.DO_NOT_DISTURB);
-            shardManager.setActivity(Activity.competing("loli hunt"));
+            shardManager.setStatus(OnlineStatus.ONLINE);
+            assert prefix != null;
+            shardManager.setActivity(Activity.listening(prefix + "help"));
 //            await all shards' ready status before continuing
             shardManager.getShards().parallelStream().forEach(jda -> {
                 try {
