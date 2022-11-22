@@ -133,12 +133,16 @@ public class Launcher {
 //                });
 //            }
 
-            String filePath = "./queue.save";
+            String filePath = PropertiesLoadingService.requireProperty("QUEUE_SAVE_PATH");
             FileInputStream fileInputStream = null;
             try {
                 fileInputStream = new FileInputStream(filePath);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            } catch (FileNotFoundException ignored) {
+                if (new File(filePath).createNewFile()) {
+                    logger.info("Created queue.save file!");
+                } else logger.warn("File " + filePath + " already exists!");
+
+                fileInputStream = new FileInputStream(filePath);
             }
 
             try (ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
