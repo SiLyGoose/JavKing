@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 
 import javax.annotation.Nullable;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
@@ -32,6 +33,12 @@ public class PropertiesLoadingService {
 
             String value = properties.getProperty(key);
 
+            stringHashMap.put(key, value);
+
+            return value;
+        } catch (FileNotFoundException e) {
+            String value = System.getenv(key);
+            
             stringHashMap.put(key, value);
 
             return value;
