@@ -65,7 +65,7 @@ public class Launcher {
                             CacheFlag.MEMBER_OVERRIDES
                     ))
                     .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                    .setStatus(OnlineStatus.DO_NOT_DISTURB)
+                    .setStatus(OnlineStatus.ONLINE)
                     .setChunkingFilter(ChunkingFilter.NONE);
 
             NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
