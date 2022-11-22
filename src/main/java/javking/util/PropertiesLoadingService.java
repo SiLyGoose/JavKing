@@ -36,7 +36,7 @@ public class PropertiesLoadingService {
             stringHashMap.put(key, value);
 
             return value;
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException ignored) {
             String value = System.getenv(key);
             
             stringHashMap.put(key, value);
