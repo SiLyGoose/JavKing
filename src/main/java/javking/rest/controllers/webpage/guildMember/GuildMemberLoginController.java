@@ -135,6 +135,7 @@ public class GuildMemberLoginController {
         Cookie cookie = new Cookie("userId", member.getId());
         cookie.setPath("/");
         cookie.setMaxAge(86400);
+        cookie.setDomain(".javking.live");
 //        httpOnly increases security but inaccessible through JS
 //        cookie.setHttpOnly(true);
 
