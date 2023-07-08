@@ -1,0 +1,12 @@
+host
+target
+out
+app
+
+.settings
+.project
+.classpath
+
+server.log
+
+src/main/resources/default.properties
