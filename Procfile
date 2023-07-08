@@ -1,1 +1,1 @@
-web: java -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 $JAVA_OPTS -jar -Dserver.port=$PORT JavKing-1.1.jar
+web: java -XX:+UseContainerSupport -XX:MaxRAMPercentage=50 $JAVA_OPTS -jar -Dserver.port=$PORT out/artifacts/JavKing-1.1.jar
