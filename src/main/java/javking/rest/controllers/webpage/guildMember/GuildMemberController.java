@@ -9,39 +9,41 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Controller
 public class GuildMemberController {
     @PostMapping("/api/add-guild-member/")
     public ResponseEntity<GuildMember> addGuildMember(@RequestBody GuildMember guildMember) {
-        GuildMemberManager.setGuildMember(guildMember.getId(), guildMember);
+        GuildMemberManager.setGuildMember(guildMember.getUuid(), guildMember);
         return ResponseEntity.ok(guildMember);
     }
 
-    @DeleteMapping("/api/remove-guild-member/{id}")
-    public ResponseEntity<String> removeGuildMember(@PathVariable("id") String userId) {
-        return ResponseEntity.ok(guildMemberData(GuildMemberManager.removeGuildMember(userId), false).toString());
+    @DeleteMapping("/api/remove-guild-member/{uuid}")
+    public ResponseEntity<String> removeGuildMember(@PathVariable("uuid") String uuid) {
+        return ResponseEntity.ok(guildMemberData(GuildMemberManager.removeGuildMember(uuid), false).toString());
     }
 
-    @GetMapping("/api/guild-member/{id}")
-    public ResponseEntity<String> getGuildMember(@PathVariable("id") String userId) {
-        if (validUserId(userId)) return ResponseEntity.notFound().build();
+    @GetMapping("/api/guild-member/{uuid}")
+    public ResponseEntity<String> getGuildMember(@PathVariable("uuid") String uuid) {
+        if (validUserId(uuid)) return ResponseEntity.notFound().build();
 
-        GuildMember member = GuildMemberManager.getGuildMember(userId);
+        GuildMember member = GuildMemberManager.getGuildMember(uuid);
 
         return ResponseEntity.ok(guildMemberData(member, true).toString());
     }
 
-    @GetMapping("/api/guild-member-data/{id}")
-    public ResponseEntity<String> getGuildMemberData(@PathVariable("id") String userId) {
-        if (validUserId(userId)) return ResponseEntity.notFound().build();
+    @GetMapping("/api/guild-member-data/{uuid}")
+    public ResponseEntity<String> getGuildMemberData(@PathVariable("uuid") String uuid) {
+        if (validUserId(uuid)) return ResponseEntity.notFound().build();
 
-        GuildMember member = GuildMemberManager.getGuildMember(userId);
+        GuildMember member = GuildMemberManager.getGuildMember(uuid);
 
         return ResponseEntity.ok(guildMemberData(member, false).toString());
     }
 
-    private boolean validUserId(String userId) {
-        return userId == null || !GuildMemberManager.hasGuildMember(userId);
+    private boolean validUserId(String identifier) {
+        return identifier == null || !GuildMemberManager.hasGuildMember(UUID.fromString(identifier));
     }
 
     private JSONObject guildMemberData(GuildMember member, boolean simplified) {

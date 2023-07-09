@@ -21,9 +21,9 @@ import java.util.stream.Collectors;
 
 @Controller
 public class GuildVoiceMemberController {
-    @GetMapping("/api/voice-member-data/u={u}&stationId={stationId}")
-    public ResponseEntity<String> getVoiceMemberData(@PathVariable("u") String userId, @PathVariable("stationId") String stationId) {
-        VoiceMember voiceMember = VoiceMemberManager.getVoiceMember(userId);
+    @GetMapping("/api/voice-member-data/token={t}&stationId={s}")
+    public ResponseEntity<String> getVoiceMemberData(@PathVariable("t") String token, @PathVariable("s") String stationId) {
+        VoiceMember voiceMember = VoiceMemberManager.getVoiceMember(token);
         Guild guild = JavKing.get().getShardManager().getGuildById(stationId);
         assert guild != null;
         List<GuildChannel> guildChannelList = guild.getChannels();

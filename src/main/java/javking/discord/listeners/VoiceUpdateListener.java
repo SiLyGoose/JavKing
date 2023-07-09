@@ -29,7 +29,7 @@ import java.util.UUID;
 public class VoiceUpdateListener extends ListenerAdapter {
     private static SocketIOServer server;
     //    sessionId -> StationClient Map
-    private static Map<String, StationClient> stationManager;
+    private static Map<UUID, StationClient> stationManager;
     private BufferedWriter writer;
 
     public VoiceUpdateListener(SocketIOServer server) {
@@ -41,15 +41,15 @@ public class VoiceUpdateListener extends ListenerAdapter {
             HandshakeData handShakeData = socketIOClient.getHandshakeData();
 
             String stationId = handShakeData.getSingleUrlParam("s");
-            String userId = handShakeData.getSingleUrlParam("u");
+            String token = handShakeData.getSingleUrlParam("t");
 
-            stationManager.put(userId, new StationClient(stationId, socketIOClient));
+            stationManager.put(UUID.fromString(token), new StationClient(stationId, socketIOClient));
 
-            System.out.println("Client connected: " + sessionId + " with Station ID: " + stationId + " with User ID: " + userId);
+            System.out.println("Client connected: " + sessionId + " with Station ID: " + stationId + " with User ID: " + token);
         });
 
         server.addDisconnectListener(socketIOClient -> {
-            stationManager.remove(socketIOClient.getHandshakeData().getSingleUrlParam("u"));
+            stationManager.remove(UUID.fromString(socketIOClient.getHandshakeData().getSingleUrlParam("t")));
 
             System.out.println("Client disconnected: " + socketIOClient.getSessionId());
         });
@@ -62,14 +62,12 @@ public class VoiceUpdateListener extends ListenerAdapter {
         }
     }
 
-    public static StationClient getClientById(String userId) {
-//        sessionId -> uid
-//        for (String sessionId : stationManager.keySet()) {
-//            if (guildId.equals(stationManager.get(sessionId).getStationId())) {
-//                return getClient(sessionId);
-//            }
-//        }
-        return stationManager.get(userId);
+    public static StationClient getClientById(String token) {
+        return getClientById(UUID.fromString(token));
+    }
+
+    public static StationClient getClientById(UUID token) {
+        return stationManager.get(token);
     }
 
     public static StationClient getClientByGuildId(String guildId) {

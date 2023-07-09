@@ -1,22 +1,19 @@
 package javking.rest.controllers.webpage.guildMember;
 
 import com.google.api.client.util.Lists;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import javking.discord.GuildManager;
 import javking.rest.controllers.GuildMemberManager;
 import javking.rest.controllers.models.ProxyGuild;
 import javking.rest.payload.data.GuildMember;
+import javking.rest.payload.oauth.OAuthData;
 import javking.util.PropertiesLoadingService;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -31,8 +28,8 @@ import java.util.stream.Collectors;
 
 @Controller
 public class GuildMemberLoginController {
-    @GetMapping("/login-callback")
-    public void getGuildMemberCode(@RequestParam("code") String code, @RequestParam("state") String postRedirectPath, HttpServletResponse response) throws Exception {
+    @PostMapping("/login-callback")
+    public void getGuildMemberCode(@RequestParam("code") String code, @RequestParam("uuid") String uuid, HttpServletResponse response) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
 
         String requestBody = String.format("client_id=%s&client_secret=%s&grant_type=%s&code=%s&redirect_uri=%s",
@@ -63,7 +60,7 @@ public class GuildMemberLoginController {
                 .header("Accept", "application/json")
                 .header("Authorization", String.format("%s %s", tokenType, accessToken)).build();
 
-        oauthResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
+        oauthResponse = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
         assert oauthResponse.body() != null;
         JSONObject object = new JSONObject(oauthResponse.body());
@@ -125,30 +122,15 @@ public class GuildMemberLoginController {
         connection.disconnect();
 
         GuildMember member;
-        if (!GuildMemberManager.hasGuildMember(id)) {
-            member = new GuildMember(id, username, discriminator, avatar, accessToken, refreshToken, tokenType, String.valueOf(expiresIn), mutualGuildList, userGuildList);
-            GuildMemberManager.setGuildMember(id, member);
-        } else member = GuildMemberManager.getGuildMember(id);
+        if (!GuildMemberManager.hasGuildMember(uuid)) {
+            member = new GuildMember(uuid, id, username, discriminator, avatar, accessToken, refreshToken, tokenType, String.valueOf(expiresIn), mutualGuildList, userGuildList);
+            GuildMemberManager.setGuildMember(uuid, member);
+        } else member = GuildMemberManager.getGuildMember(uuid);
 
-//        new RestService(new RestTemplateBuilder()).updatePost(member);
-
-        Cookie cookie = new Cookie("userId", member.getId());
-        cookie.setPath("/");
-        cookie.setMaxAge(86400);
-        cookie.setDomain(".javking.live");
-//        httpOnly increases security but inaccessible through JS
-//        cookie.setHttpOnly(true);
-
-        response.addCookie(cookie);
-
-        String redirectScript = "<script>" +
-                "document.cookie = '" + cookie.getName() + "=" + cookie.getValue() + "';" +
-                "window.location.href = '" + PropertiesLoadingService.loadProperty("CLIENT_BASE_URL") + postRedirectPath + "';" +
-                "</script>";
-
-        response.setContentType("text/html");
-        response.getWriter().write(redirectScript);
-        response.getWriter().flush();
+//        checks if user still registered by bot but token has expired
+        if (!member.getUuid().equals(UUID.fromString(uuid))) {
+            member.setUuid(uuid);
+        }
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

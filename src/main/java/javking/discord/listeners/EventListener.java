@@ -11,7 +11,9 @@ import javking.audio.exec.BlockingTrackLoadingExecutor;
 import javking.concurrent.ScheduledTask;
 import javking.discord.MessageService;
 import javking.exceptions.UnavailableResourceException;
+import javking.rest.controllers.GuildMemberManager;
 import javking.rest.controllers.StationClient;
+import javking.rest.payload.data.GuildMember;
 import javking.templates.Templates;
 import javking.util.TimeConvertingService;
 import javking.util.function.ChainableRunnable;
@@ -19,6 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.json.JSONObject;
+
+import java.util.UUID;
 
 import static javking.util.function.populator.SocketDataPopulator.*;
 
@@ -53,8 +57,11 @@ public class EventListener implements DataListener<String> {
     @Override
     public void onData(final SocketIOClient socketIOClient, String data, AckRequest ackRequest) throws Exception {
         JSONObject d = new JSONObject(data);
-        StationClient client = VoiceUpdateListener.getClientById(d.getString("u"));
-        User user = JavKing.get().getShardManager().getUserById(d.getString("u"));
+        GuildMember guildMember = GuildMemberManager.getGuildMember(d.getString("t"));
+        String userId = guildMember.getId();
+
+        StationClient client = VoiceUpdateListener.getClientById(userId);
+        User user = JavKing.get().getShardManager().getUserById(userId);
 
         if (user == null || client == null) return;
 
