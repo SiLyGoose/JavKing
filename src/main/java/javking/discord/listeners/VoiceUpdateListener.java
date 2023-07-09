@@ -2,6 +2,7 @@ package javking.discord.listeners;
 
 import com.corundumstudio.socketio.HandshakeData;
 import com.corundumstudio.socketio.SocketIOServer;
+import javking.rest.controllers.GuildMemberManager;
 import javking.rest.controllers.StationClient;
 import javking.rest.controllers.VoiceMemberManager;
 import javking.rest.payload.voice.BotChannel;
@@ -62,8 +63,8 @@ public class VoiceUpdateListener extends ListenerAdapter {
         }
     }
 
-    public static StationClient getClientById(String token) {
-        return getClientById(UUID.fromString(token));
+    public static StationClient getClientById(String userId) {
+        return getClientById(GuildMemberManager.getIdentifier(userId));
     }
 
     public static StationClient getClientById(UUID token) {
