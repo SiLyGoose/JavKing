@@ -1,1 +1,1 @@
-web: bin/start-nginx java -Dserver.port=$PORT $JAVA_OPTS -jar out/artifacts/JavKing-1.1.jar
+web: bin/start-nginx.sh
