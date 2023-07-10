@@ -110,8 +110,8 @@ public class Launcher {
                     guildManager, messageService, spotifyApiBuilder);
 
             Configuration configuration = new Configuration();
-            configuration.setHostname("localhost");
-            configuration.setPort(3080);
+            configuration.setHostname(PropertiesLoadingService.loadProperty("HOST"));
+            configuration.setPort(Integer.parseInt(PropertiesLoadingService.loadProperty("PORT")));
             configuration.setOrigin("*");
             configuration.setTransports(Transport.POLLING);
             SocketIOServer server = new SocketIOServer(configuration);
