@@ -3,10 +3,8 @@ package javking.commands;
 import javking.JavKing;
 import javking.audio.AudioManager;
 import javking.audio.AudioPlayback;
-import javking.discord.listeners.VoiceUpdateListener;
 import javking.models.command.CommandContext;
 import javking.models.meta.AbstractCommand;
-import javking.rest.controllers.StationClient;
 import net.dv8tion.jda.api.entities.Guild;
 
 public class join extends AbstractCommand {

@@ -10,18 +10,23 @@ import java.util.UUID;
 public class GuildMember implements Serializable {
     private static final long serialVersionUID = 100L;
 
-    private final String id;
+    private final String id, name;
     private UUID uuid;
     private final MemberData data;
 
     public GuildMember(String uuid, String id, String name, String discriminator, String avatar, String accessToken, String refreshToken, String tokenType, String expiresIn, List<ProxyGuild> mutualList, List<ProxyGuild> userGuildList) {
         this.uuid = UUID.fromString(uuid);
         this.id = id;
+        this.name = name;
         this.data = new MemberData(name, discriminator, avatar, accessToken, refreshToken, tokenType, expiresIn, mutualList, userGuildList);
     }
 
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public UUID getUuid() {

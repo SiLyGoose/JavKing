@@ -9,18 +9,15 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import javking.JavKing;
 import javking.concurrent.ScheduledTask;
 import javking.discord.MessageService;
-import javking.discord.listeners.VoiceUpdateListener;
 import javking.exceptions.CommandExecutionException;
 import javking.exceptions.UnavailableResourceException;
 import javking.exceptions.handlers.LoggingExceptionHandler;
-import javking.models.guild.user.UserContext;
 import javking.models.music.Playable;
-import javking.rest.controllers.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClientManager;
 import javking.templates.Templates;
 import javking.util.YouTube.HollowYouTubeVideo;
-import net.dv8tion.jda.api.entities.User;
 import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
@@ -123,11 +120,11 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
     }
 
     private void handleTrackEvent(String event, @Nullable Throwable e) {
-        StationClient stationClient = VoiceUpdateListener.getClientByGuildId(audioPlayback.getGuild().getId());
+        StationClient stationClient = StationClientManager.getStationClient(audioPlayback.getGuild().getId());
         if (stationClient == null) return;
 
         if (e != null) {
-            VoiceUpdateListener.sendEvent(event, stationClient, new JSONObject().put("trackException", e.getMessage()));
+            stationClient.sendEvent(event, new JSONObject().put("trackException", e.getMessage()));
         } else {
             JSONObject data = new JSONObject();
             data.put("id", audioPlayback.getGuild().getId());
@@ -162,7 +159,7 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
             ScheduledTask task = stationClient.getScheduledTask();
             if (!task.isInProgress()) task.startScheduledTask(audioPlayback, stationClient);
 
-            VoiceUpdateListener.sendEvent(event, stationClient, data);
+            stationClient.sendEvent(event, data);
         }
     }
 
@@ -259,7 +256,7 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
                 lingerDelayMap.put(playback.getGuild().getId(), scheduler.schedule(() -> {
                     playback.leaveChannel();
 //                        remove timeUpdate events since bot has left channel
-                    StationClient stationClient = VoiceUpdateListener.getClientByGuildId(playback.getGuild().getId());
+                    StationClient stationClient = StationClientManager.getStationClient(playback.getGuild().getId());
                     if (stationClient == null) return;
 
                     ScheduledTask task = stationClient.getScheduledTask();

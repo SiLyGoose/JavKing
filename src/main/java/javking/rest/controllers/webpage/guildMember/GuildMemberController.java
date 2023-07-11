@@ -11,20 +11,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Controller
+@RestController
+@RequestMapping("/v2.api")
 public class GuildMemberController {
-    @PostMapping("/api/add-guild-member/")
+    @PostMapping("/add-guild-member/")
     public ResponseEntity<GuildMember> addGuildMember(@RequestBody GuildMember guildMember) {
         GuildMemberManager.setGuildMember(guildMember.getUuid(), guildMember);
         return ResponseEntity.ok(guildMember);
     }
 
-    @DeleteMapping("/api/remove-guild-member/{uuid}")
+    @DeleteMapping("/remove-guild-member/{uuid}")
     public ResponseEntity<String> removeGuildMember(@PathVariable("uuid") String uuid) {
         return ResponseEntity.ok(guildMemberData(GuildMemberManager.removeGuildMember(uuid), false).toString());
     }
 
-    @GetMapping("/api/guild-member/{uuid}")
+    @GetMapping("/guild-member/{uuid}")
     public ResponseEntity<String> getGuildMember(@PathVariable("uuid") String uuid) {
         if (validUserId(uuid)) return ResponseEntity.notFound().build();
 
@@ -33,7 +34,7 @@ public class GuildMemberController {
         return ResponseEntity.ok(guildMemberData(member, true).toString());
     }
 
-    @GetMapping("/api/guild-member-data/{uuid}")
+    @GetMapping("/guild-member-data/{uuid}")
     public ResponseEntity<String> getGuildMemberData(@PathVariable("uuid") String uuid) {
         if (validUserId(uuid)) return ResponseEntity.notFound().build();
 

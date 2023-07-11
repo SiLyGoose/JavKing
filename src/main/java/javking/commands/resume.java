@@ -3,14 +3,11 @@ package javking.commands;
 import javking.JavKing;
 import javking.audio.AudioManager;
 import javking.audio.AudioPlayback;
-import javking.discord.listeners.VoiceUpdateListener;
 import javking.models.command.CommandContext;
 import javking.models.meta.AbstractCommand;
-import javking.rest.controllers.StationClient;
 import javking.templates.Templates;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
-import org.json.JSONObject;
 
 import static javking.util.function.populator.SocketDataPopulator.handleTrackMutatorEvent;
 

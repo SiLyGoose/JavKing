@@ -7,17 +7,19 @@ import javking.audio.AudioQueue;
 import javking.models.music.Playable;
 import net.dv8tion.jda.api.entities.Guild;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@Controller
+@RestController
+@RequestMapping("/v2.api")
 public class GuildQueueController {
-    @GetMapping("/api/queue-data/{id}")
+    @GetMapping("/queue-data/{id}")
     public ResponseEntity<List<Playable>> getQueueData(@PathVariable("id") String stationId) {
         Guild guild = JavKing.get().getShardManager().getGuildById(stationId);
         AudioPlayback audioPlayback = JavKing.get().getAudioManager().getPlaybackForGuild(guild);

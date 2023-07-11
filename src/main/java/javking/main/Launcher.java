@@ -1,9 +1,5 @@
 package javking.main;
 
-import com.corundumstudio.socketio.Configuration;
-import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.Transport;
-import com.corundumstudio.socketio.listener.DataListener;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
@@ -18,7 +14,6 @@ import javking.database.MongoManager;
 import javking.discord.GuildManager;
 import javking.discord.MessageService;
 import javking.discord.listeners.CommandListener;
-import javking.discord.listeners.EventListener;
 import javking.discord.listeners.VoiceUpdateListener;
 import javking.exceptions.UnavailableResourceException;
 import javking.models.music.Playable;
@@ -109,21 +104,7 @@ public class Launcher {
             CommandListener commandListener = new CommandListener(executionQueueManager, commandManager,
                     guildManager, messageService, spotifyApiBuilder);
 
-            Configuration configuration = new Configuration();
-            configuration.setHostname(PropertiesLoadingService.loadProperty("HOST"));
-            configuration.setPort(Integer.parseInt(PropertiesLoadingService.loadProperty("PORT")));
-            configuration.setOrigin("*");
-            configuration.setTransports(Transport.POLLING);
-            SocketIOServer server = new SocketIOServer(configuration);
-
-            String[] eventNames = {"stationSkipped", "stationPaused", "stationRepeat", "stationPrevious", "stationShuffled", "stationAccessed", "stationSeek", "stationTrackRemoved"};
-
-            for (String eventName : eventNames) {
-                DataListener<String> listener = new EventListener(eventName, messageService);
-                server.addEventListener(eventName, String.class, listener);
-            }
-
-            VoiceUpdateListener voiceUpdateListener = new VoiceUpdateListener(server);
+            VoiceUpdateListener voiceUpdateListener = new VoiceUpdateListener();
 
             JavKing javking = new JavKing(audioManager, executionQueueManager, commandManager, guildManager,
                     loginManager, mongoManager, messageService, shardManager, spotifyApiBuilder, spotifyComponent,

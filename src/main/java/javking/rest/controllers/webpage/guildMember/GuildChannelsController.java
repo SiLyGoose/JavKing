@@ -9,12 +9,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@Controller
+@RestController
+@RequestMapping("/v2.api")
 public class GuildChannelsController {
-    @GetMapping("/api/guild-channels-data/{id}")
+    @GetMapping("/guild-channels-data/{id}")
     public ResponseEntity<List<String>> getGuildChannelsData(@PathVariable("id") String guildId) {
         ShardManager shardManager = JavKing.get().getShardManager();
         Guild guild = shardManager.getGuildById(guildId);

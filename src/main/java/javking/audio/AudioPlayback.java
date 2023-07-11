@@ -2,16 +2,15 @@ package javking.audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import javking.discord.listeners.VoiceUpdateListener;
 import javking.exceptions.UnavailableResourceException;
 import javking.models.command.CommandContext;
 import javking.models.music.Playable;
-import javking.rest.controllers.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClientManager;
 import javking.util.YouTube.YouTubePlaylist;
 import javking.util.YouTube.YouTubeVideo;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.json.JSONArray;
@@ -68,7 +67,7 @@ public class AudioPlayback implements Serializable {
         AtomicInteger count = new AtomicInteger(0);
         JSONArray tracksData = new JSONArray();
 
-        StationClient stationClient = VoiceUpdateListener.getClientByGuildId(guild.getId());
+        StationClient stationClient = StationClientManager.getStationClient(guild.getId());
 
         playables.parallelStream().forEachOrdered(playable -> {
             try {
@@ -87,7 +86,7 @@ public class AudioPlayback implements Serializable {
         JSONObject data = new JSONObject();
         data.put("q", tracksData);
 
-        VoiceUpdateListener.sendEvent("tracksAdded", stationClient, data);
+        stationClient.sendEvent("tracksAdded", data);
     }
 
     public void remove() {
@@ -127,6 +126,10 @@ public class AudioPlayback implements Serializable {
 
     public void resume() {
         audioPlayer.setPaused(false);
+    }
+
+    public void togglePaused(boolean paused) {
+        audioPlayer.setPaused(paused);
     }
 
     public boolean isPaused() {

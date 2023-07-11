@@ -1,8 +1,7 @@
 package javking.concurrent;
 
 import javking.audio.AudioPlayback;
-import javking.discord.listeners.VoiceUpdateListener;
-import javking.rest.controllers.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClient;
 import org.json.JSONObject;
 
 import java.util.concurrent.Executors;
@@ -33,7 +32,7 @@ public class ScheduledTask {
         return () -> {
             JSONObject data = new JSONObject();
             data.put("positionMs", audioPlayback.getCurrentPositionMs());
-            VoiceUpdateListener.sendEvent("timeUpdate", stationClient, data);
+            stationClient.sendEvent("timeUpdate", data);
         };
     }
 

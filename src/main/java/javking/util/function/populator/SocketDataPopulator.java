@@ -2,10 +2,10 @@ package javking.util.function.populator;
 
 import javking.audio.AudioPlayback;
 import javking.audio.AudioQueue;
-import javking.discord.listeners.VoiceUpdateListener;
 import javking.exceptions.UnavailableResourceException;
 import javking.models.music.Playable;
-import javking.rest.controllers.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClientManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -39,11 +39,11 @@ public class SocketDataPopulator {
     }
 
     public static void handleTrackMutatorEvent(String event, String userId, @Nullable AudioPlayback audioPlayback, JSONObject data) {
-        StationClient stationClient = VoiceUpdateListener.getClientById(userId);
+        StationClient stationClient = StationClientManager.getStationClientByUser(userId);
         if (stationClient == null) return;
 
         handleMutatorData(audioPlayback, data);
-        VoiceUpdateListener.sendEvent(event, stationClient, data);
+        stationClient.sendEvent(event, data);
     }
 
     public static void handleQueueMutatorEvent(String event, String userId, @Nullable AudioPlayback audioPlayback) throws UnavailableResourceException {
@@ -51,7 +51,7 @@ public class SocketDataPopulator {
     }
 
     public static void handleQueueMutatorEvent(String event, String userId, @Nullable AudioPlayback audioPlayback, JSONObject data) throws UnavailableResourceException {
-        StationClient stationClient = VoiceUpdateListener.getClientById(userId);
+        StationClient stationClient = StationClientManager.getStationClientByUser(userId);
         if (stationClient == null) return;
 
         handleMutatorData(audioPlayback, data);
@@ -71,11 +71,11 @@ public class SocketDataPopulator {
             data.put("q", tracksData);
         }
 
-        VoiceUpdateListener.sendEvent(event, stationClient, data);
+        stationClient.sendEvent(event, data);
     }
 
     public static void handleTrackUpdateEvent(String event, String userId, AudioPlayback audioPlayback) {
-        StationClient stationClient = VoiceUpdateListener.getClientById(userId);
+        StationClient stationClient = StationClientManager.getStationClientByUser(userId);
         if (stationClient == null) return;
 
         JSONObject data = handleMutatorData(audioPlayback);
@@ -83,6 +83,6 @@ public class SocketDataPopulator {
         data.put("positionMs", audioPlayback.getCurrentPositionMs());
         data.put("position", audioPlayback.getAudioQueue().getPosition());
 
-        VoiceUpdateListener.sendEvent(event, stationClient, data);
+        stationClient.sendEvent(event, data);
     }
 }

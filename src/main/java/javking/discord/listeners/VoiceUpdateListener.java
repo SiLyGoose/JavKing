@@ -1,10 +1,8 @@
 package javking.discord.listeners;
 
-import com.corundumstudio.socketio.HandshakeData;
-import com.corundumstudio.socketio.SocketIOServer;
-import javking.rest.controllers.GuildMemberManager;
-import javking.rest.controllers.StationClient;
+import javking.rest.controllers.webpage.websocket.StationClient;
 import javking.rest.controllers.VoiceMemberManager;
+import javking.rest.controllers.webpage.websocket.StationClientManager;
 import javking.rest.payload.voice.BotChannel;
 import javking.rest.payload.voice.UserChannel;
 import javking.rest.payload.voice.VoiceMember;
@@ -17,79 +15,12 @@ import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.JSONObject;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
-import java.io.BufferedWriter;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
-@Service
 public class VoiceUpdateListener extends ListenerAdapter {
-    private static SocketIOServer server;
-    //    sessionId -> StationClient Map
-    private static Map<UUID, StationClient> stationManager;
-    private BufferedWriter writer;
+    public VoiceUpdateListener() {
 
-    public VoiceUpdateListener(SocketIOServer server) {
-        VoiceUpdateListener.server = server;
-        VoiceUpdateListener.stationManager = new HashMap<>();
-
-        server.addConnectListener(socketIOClient -> {
-            String sessionId = socketIOClient.getSessionId().toString();
-            HandshakeData handShakeData = socketIOClient.getHandshakeData();
-
-            String stationId = handShakeData.getSingleUrlParam("s");
-            String token = handShakeData.getSingleUrlParam("t");
-
-            stationManager.put(UUID.fromString(token), new StationClient(stationId, socketIOClient));
-
-            System.out.println("Client connected: " + sessionId + " with Station ID: " + stationId + " with User ID: " + token);
-        });
-
-        server.addDisconnectListener(socketIOClient -> {
-            stationManager.remove(UUID.fromString(socketIOClient.getHandshakeData().getSingleUrlParam("t")));
-
-            System.out.println("Client disconnected: " + socketIOClient.getSessionId());
-        });
-
-        try {
-            server.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(server::stop));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static StationClient getClientById(String userId) {
-        return getClientById(GuildMemberManager.getIdentifier(userId));
-    }
-
-    public static StationClient getClientById(UUID token) {
-        return stationManager.get(token);
-    }
-
-    public static StationClient getClientByGuildId(String guildId) {
-        for (StationClient stationClient : stationManager.values()) {
-            if (stationClient.getGuild().getId().equals(guildId)) {
-                return stationClient;
-            }
-        }
-        return null;
-    }
-
-    public static void sendEvent(String op, StationClient stationClient, JSONObject data) {
-//        JSONObject revisedData = new JSONObject();
-//        revisedData.put("op", op);
-//        revisedData.put("data", data);
-        sendEvent(op, stationClient.getClient().getSessionId(), data.toString());
-    }
-
-    public static void sendEvent(String op, UUID uuid, Object... data) {
-        System.out.println("UUID: " + uuid + " " + op + ": " + Arrays.toString(data));
-        server.getClient(uuid).sendEvent(op, data);
     }
 
     @Override
@@ -166,10 +97,10 @@ public class VoiceUpdateListener extends ListenerAdapter {
 
         VoiceMemberManager.setVoiceMember(entityUser.getId(), voiceMember);
 
-        StationClient stationClient = getClientById(entityUser.getId());
+        StationClient stationClient = StationClientManager.getStationClientByUser(entityUser.getId());
         if (stationClient == null) return;
 
-        sendEvent("voiceStatusUpdate", stationClient, data);
+        stationClient.sendEvent("voiceStatusUpdate", data);
     }
 
     private void updateUserChannel(UserChannel memberUserChannel, JSONObject data, JSONObject userChannelObject, VoiceChannel voiceChannel, boolean botJoinable) {

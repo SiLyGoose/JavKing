@@ -205,7 +205,7 @@ public class HollowYouTubeVideo extends AbstractSoftCachedPlayable implements Yo
         JSONObject requesterData = new JSONObject();
         requesterData.put("avatar", getRequester().getAvatarUrl());
         requesterData.put("id", getRequester().getId());
-        requesterData.put("username", getRequester().getName().concat("#").concat(getRequester().getDiscriminator()));
+        requesterData.put("username", getRequester().getName().concat("#").concat(getRequester().getEffectiveName()));
 
         JSONObject trackData = new JSONObject();
         trackData.put("requester", requesterData);

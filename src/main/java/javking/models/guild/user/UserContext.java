@@ -22,7 +22,7 @@ public class UserContext implements User, Serializable {
     private String refreshToken;
     private int expiresIn;
 
-    private String name;
+    private String name, globalName;
     private String discriminator;
     private String asMention;
 
@@ -72,6 +72,7 @@ public class UserContext implements User, Serializable {
         setId(user.getId());
 
         setName(user.getName());
+        setGlobalName(user.getGlobalName());
         setDiscriminator(user.getDiscriminator());
         setAsMention(user.getAsMention());
 
@@ -92,6 +93,16 @@ public class UserContext implements User, Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Nullable
+    @Override
+    public String getGlobalName() {
+        return globalName;
+    }
+
+    public void setGlobalName(String globalName) {
+        this.globalName = globalName;
     }
 
     @NotNull

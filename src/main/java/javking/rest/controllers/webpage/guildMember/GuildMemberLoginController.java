@@ -12,7 +12,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.BufferedReader;
@@ -26,10 +25,10 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Controller
+@RestController
 public class GuildMemberLoginController {
     @PostMapping("/login-callback")
-    public void getGuildMemberCode(@RequestParam("code") String code, @RequestParam("uuid") String uuid, HttpServletResponse response) throws Exception {
+    public ResponseEntity<?> getGuildMemberCode(@RequestParam("code") String code, @RequestParam("uuid") String uuid, HttpServletResponse response) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
 
         String requestBody = String.format("client_id=%s&client_secret=%s&grant_type=%s&code=%s&redirect_uri=%s",
@@ -131,6 +130,8 @@ public class GuildMemberLoginController {
         if (!member.getUuid().equals(UUID.fromString(uuid))) {
             member.setUuid(uuid);
         }
+
+        return ResponseEntity.ok().build();
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)

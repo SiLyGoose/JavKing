@@ -3,22 +3,12 @@ package javking.commands;
 import javking.JavKing;
 import javking.audio.AudioManager;
 import javking.audio.AudioPlayback;
-import javking.audio.AudioQueue;
-import javking.discord.listeners.VoiceUpdateListener;
 import javking.models.command.CommandContext;
 import javking.models.meta.AbstractPlayCommand;
-import javking.models.music.Playable;
-import javking.rest.controllers.StationClient;
 import javking.templates.Templates;
 import javking.util.Spotify.SpotifyUri;
-import javking.util.YouTube.HollowYouTubeVideo;
 import javking.util.YouTube.YouTubeUri;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.json.JSONObject;
-
-import java.util.Arrays;
 
 public class play extends AbstractPlayCommand {
 

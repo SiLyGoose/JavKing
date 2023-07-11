@@ -1,25 +1,14 @@
 package javking.models.meta;
 
-import javking.audio.AudioPlayback;
-import javking.audio.AudioQueue;
 import javking.concurrent.CommandExecutionTask;
 import javking.discord.MessageService;
-import javking.discord.listeners.VoiceUpdateListener;
-import javking.exceptions.UnavailableResourceException;
 import javking.models.command.Command;
 import javking.models.command.CommandContext;
-import javking.models.music.Playable;
-import javking.rest.controllers.StationClient;
 import javking.templates.EmbedTemplate;
 import javking.util.Spotify.SpotifyService;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.SelfUser;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.annotation.Nullable;
-import java.util.concurrent.atomic.AtomicInteger;
 //import javking.util.Spotify.SpotifyService;
 
 public abstract class AbstractCommand extends Command {

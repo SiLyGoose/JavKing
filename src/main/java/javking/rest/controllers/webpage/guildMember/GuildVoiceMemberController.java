@@ -20,8 +20,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
+@RequestMapping("/v2.api")
 public class GuildVoiceMemberController {
-    @GetMapping("/api/voice-member-data/token={t}&stationId={s}")
+    @GetMapping("/voice-member-data/token={t}&stationId={s}")
     public ResponseEntity<String> getVoiceMemberData(@PathVariable("t") String token, @PathVariable("s") String stationId) {
         VoiceMember voiceMember = VoiceMemberManager.getVoiceMember(token);
         Guild guild = JavKing.get().getShardManager().getGuildById(stationId);
