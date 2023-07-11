@@ -2,8 +2,8 @@ package javking.rest.controllers.webpage.websocket;
 
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Supplier;
 
 @Component
 public class StationClientManager {
@@ -21,7 +21,8 @@ public class StationClientManager {
     }
 
     public static StationClient getStationClientByUser(String userId) {
-        return getStationClient(getUserIdentifier(userId));
+        Optional<UUID> optionalUuid = getUserIdentifier(userId);
+        return optionalUuid.map(StationClientManager::getStationClient).orElse(null);
     }
 
     public static StationClient getStationClient(String stationId) {
@@ -58,11 +59,10 @@ public class StationClientManager {
         return stationIdentifiers.get(stationId);
     }
 
-    public static UUID getUserIdentifier(String userId) {
+    public static Optional<UUID> getUserIdentifier(String userId) {
         return stationIdentifiers.entrySet().parallelStream()
                 .filter(entry -> entry.getKey().equals(userId))
                 .findFirst()
-                .orElseThrow()
-                .getValue();
+                .map(Map.Entry::getValue);
     }
 }

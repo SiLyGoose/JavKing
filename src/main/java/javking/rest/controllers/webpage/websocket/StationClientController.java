@@ -44,6 +44,15 @@ public class StationClientController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/remove-client")
+    public ResponseEntity<?> removeStationClient(@RequestBody StationSocket stationSocket) {
+        UUID token = stationSocket.getToken();
+        if (!StationClientManager.hasStationClient(token)) return ResponseEntity.ok().build();
+
+        StationClientManager.removeStationClient(token);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/station-client-data/{uuid}")
     public ResponseEntity<StationClient> getStationClientData(@PathVariable("uuid") String token) {
         if (validToken(token)) return ResponseEntity.notFound().build();

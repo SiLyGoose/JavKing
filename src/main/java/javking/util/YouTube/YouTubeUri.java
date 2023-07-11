@@ -104,7 +104,7 @@ public class YouTubeUri {
         TRACK(Pattern.compile("v=([^#&\\n\\r]+)")) {
             @Override
             public HollowYouTubeVideo loadPlayables(YouTubeService youTubeService, YouTubeUri youTubeUri, User user, Guild guild) throws UnavailableResourceException, IOException {
-                return (HollowYouTubeVideo) youTubeService.resolveYouTubeVideo(youTubeUri.id, user, guild);
+                return (HollowYouTubeVideo) youTubeService.resolveYouTubeVideo(YouTubeConstants.VIDEO_URL_PREFIX.concat(youTubeUri.id), user, guild);
             }
         },
         PLAYLIST(Pattern.compile("list=(.*?)(?:&|$)")) {
@@ -116,7 +116,7 @@ public class YouTubeUri {
         DEFAULT(Pattern.compile("")) {
             @Override
             public HollowYouTubeVideo loadPlayables(YouTubeService youTubeService, YouTubeUri youTubeUri, User user, Guild guild) throws UnavailableResourceException, IOException {
-                return (HollowYouTubeVideo) youTubeService.resolveYouTubeVideo(new String[]{youTubeUri.id}, user, guild);
+                return (HollowYouTubeVideo) youTubeService.resolveYouTubeVideo(new String[]{YouTubeConstants.VIDEO_URL_PREFIX.concat(youTubeUri.id)}, user, guild);
             }
         };
 

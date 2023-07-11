@@ -42,18 +42,6 @@ public class StationClient {
         this(null, stationSocket.getToken(), stationSocket.getStationId(), stationSocket.getSocketId());
     }
 
-    public StationClient(String token, String stationId, String socketId) {
-        this(null, token, stationId, socketId);
-    }
-
-    public StationClient(UUID uuid, String stationId, String socketId) {
-        this(null, uuid, stationId, socketId);
-    }
-
-    public StationClient(String userId, String token, String stationId, String socketId) {
-        this(userId, UUID.fromString(token), stationId, socketId);
-    }
-
     public StationClient(String userId, UUID uuid, String stationId, String socketId) {
         this.userId = userId;
         this.stationId = stationId;
