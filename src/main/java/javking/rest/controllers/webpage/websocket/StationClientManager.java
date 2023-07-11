@@ -59,10 +59,10 @@ public class StationClientManager {
     }
 
     public static UUID getUserIdentifier(String userId) {
-        return stationClients.values().parallelStream()
-                .filter(client -> client.getUserId().equals(userId))
+        return stationIdentifiers.entrySet().parallelStream()
+                .filter(entry -> entry.getKey().equals(userId))
                 .findFirst()
                 .orElseThrow()
-                .getUuid();
+                .getValue();
     }
 }

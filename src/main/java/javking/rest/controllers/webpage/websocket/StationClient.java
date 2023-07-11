@@ -25,17 +25,13 @@ import java.util.UUID;
 
 public class StationClient {
     private String userId;
-    @JsonProperty("stationId")
     private final String stationId;
     private Guild guild;
     private CommandContext context;
     private CommandExecutionQueueManager executionQueueManager;
     private AudioManager audioManager;
 
-    @JsonProperty("token")
-    @JsonDeserialize(using = UUIDDeserializer.class)
     private final UUID uuid;
-    @JsonProperty("socketId")
     private final String socketId;
     private final RateLimiterConfig config;
     private final RateLimiter rateLimiter;

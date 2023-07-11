@@ -10,6 +10,7 @@ import javking.rest.controllers.GuildMemberManager;
 import javking.rest.payload.data.GuildMember;
 import javking.templates.Template;
 import javking.templates.Templates;
+import javking.util.TimeConvertingService;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
@@ -180,6 +181,18 @@ public class StationClientController {
 
         stationData.sendBold(Templates.music.shuffle_queue.formatFull(message));
         handleQueueMutatorEvent("stationUpdate", stationData.guildMember.getId(), audioPlayback);
+    }
+
+    @PostMapping("/stationSeek/{token}/{positionMs}")
+    public void stationSeek(@PathVariable("token") String token, @PathVariable("positionMs") long positionMs) throws UnavailableResourceException {
+        StationData stationData = new StationData(token);
+        AudioPlayback audioPlayback = stationData.audioPlayback;
+
+        audioPlayback.setCurrentPositionMs(positionMs);
+
+        assert stationData.guildMember != null;
+        String message = stationData.guildMember.getName() + " has updated track to play from: " + TimeConvertingService.millisecondsToHHMMSS(positionMs);
+        stationData.sendBold(Templates.command.blue_check_mark.formatFull(message));
     }
 
     @PostMapping("/stationTrackRemoved/{token}/{index}")
