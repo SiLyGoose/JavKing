@@ -3,15 +3,12 @@ package javking.rest.controllers.webpage.websocket;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 
 public class StationSocket {
     private final UUID token;
     private final String stationId, socketId;
-
-    public StationSocket(String token, String stationId) {
-        this(token, stationId, null);
-    }
 
     public StationSocket(String token, String stationId, String socketId) {
         this.token = UUID.fromString(token);

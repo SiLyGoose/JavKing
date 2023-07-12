@@ -67,7 +67,7 @@ public class AudioPlayback implements Serializable {
         AtomicInteger count = new AtomicInteger(0);
         JSONArray tracksData = new JSONArray();
 
-        StationClient stationClient = StationClientManager.getStationClient(guild.getId());
+        StationClient stationClient = StationClientManager.getStationClientByGuild(guild.getId());
 
         playables.parallelStream().forEachOrdered(playable -> {
             try {

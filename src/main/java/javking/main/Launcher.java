@@ -15,6 +15,7 @@ import javking.discord.GuildManager;
 import javking.discord.MessageService;
 import javking.discord.listeners.CommandListener;
 import javking.discord.listeners.VoiceUpdateListener;
+import javking.exceptions.NoResultsFoundException;
 import javking.exceptions.UnavailableResourceException;
 import javking.models.music.Playable;
 import javking.util.PropertiesLoadingService;
@@ -184,7 +185,7 @@ public class Launcher {
                         try {
                             playables.set(i, youTubeService.resolveYouTubeVideo(video.getPlaybackUrl(),
                                     video.getUserContext(), guild));
-                        } catch (IOException | UnavailableResourceException e) {
+                        } catch (IOException | UnavailableResourceException | NoResultsFoundException e) {
                             e.printStackTrace();
                         }
                     }

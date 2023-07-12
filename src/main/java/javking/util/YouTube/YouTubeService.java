@@ -16,6 +16,7 @@ import javking.audio.AudioQueue;
 import javking.audio.AudioTrackLoader;
 import javking.concurrent.LoggingThreadFactory;
 import javking.discord.MessageService;
+import javking.exceptions.NoResultsFoundException;
 import javking.exceptions.UnavailableResourceException;
 import javking.models.music.Playable;
 import javking.models.music.UrlPlayable;
@@ -129,6 +130,8 @@ public class YouTubeService {
     private YouTubeVideo searchVideo(String id, @Nullable User user) throws IOException {
         List<Video> list = youTube.videos().list(Collections.singletonList("snippet,id,contentDetails"))
                 .setId(Collections.singletonList(id)).setKey(apiKey).setMaxResults(1L).execute().getItems();
+
+        if (list.isEmpty()) throw new NoResultsFoundException(String.format("No results found for `%s`", id));
         return searchVideo(list.get(0), user);
     }
 

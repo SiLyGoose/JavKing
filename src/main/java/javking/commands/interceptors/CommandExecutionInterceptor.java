@@ -91,10 +91,10 @@ public class CommandExecutionInterceptor implements CommandInterceptor {
                 command.execute(context);
 
             } catch (Throwable e) {
-                if (e instanceof NoLoginException ||
-                        e instanceof MessageChannelException ||
+                if (e instanceof MessageChannelException ||
                         e instanceof VoiceChannelException ||
-                        e instanceof DJNotSetException) throw e;
+                        e instanceof DJNotSetException ||
+                        e instanceof UserException) throw e;
 
                 try {
                     e.printStackTrace();
@@ -130,7 +130,7 @@ public class CommandExecutionInterceptor implements CommandInterceptor {
         } catch (UserException e) {
             errorMessage = e.getMessage();
             if (e instanceof NoLoginException || e instanceof NoResultsFoundException) {
-                messageService.send(errorMessage, context.getChannel());
+                messageService.sendBold(Templates.command.exclamation.formatFull(errorMessage), context.getChannel());
             } else messageService.send(e.buildHelpEmbed(command), context.getChannel());
 
             errorMessageSent = true;

@@ -27,5 +27,6 @@ public final class Templates {
         public static final Template warning = new Template(TemplateArgument.WARNING, TemplateArgument.ARGS);
         public static final Template no_entry = new Template(TemplateArgument.NO_ENTRY, TemplateArgument.ARGS);
         public static final Template hourglass = new Template(TemplateArgument.HOURGLASS, TemplateArgument.ARGS);
+        public static final Template exclamation = new Template(TemplateArgument.EXCLAMATION, TemplateArgument.ARGS);
     }
 }

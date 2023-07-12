@@ -9,6 +9,7 @@ public enum TemplateArgument {
     CHECK("check", "Check mark", e -> "✅"),
     BLUE_CHECK("blue_check", "Blue check mark", e -> "<:blue_ballot_check:1123920048956899469>"),
 
+    EXCLAMATION("exclamation", "Exclamation", e -> "❗"),
     X("x", "X", e -> "❌"),
     NO_ENTRY("no_entry", "No entry", e -> "\uD83D\uDEAB"),
     O("o", "O", e -> "⭕"),

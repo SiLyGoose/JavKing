@@ -120,7 +120,7 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
     }
 
     private void handleTrackEvent(String event, @Nullable Throwable e) {
-        StationClient stationClient = StationClientManager.getStationClient(audioPlayback.getGuild().getId());
+        StationClient stationClient = StationClientManager.getStationClientByGuild(audioPlayback.getGuild().getId());
         if (stationClient == null) return;
 
         if (e != null) {
@@ -256,7 +256,7 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
                 lingerDelayMap.put(playback.getGuild().getId(), scheduler.schedule(() -> {
                     playback.leaveChannel();
 //                        remove timeUpdate events since bot has left channel
-                    StationClient stationClient = StationClientManager.getStationClient(playback.getGuild().getId());
+                    StationClient stationClient = StationClientManager.getStationClientByGuild(playback.getGuild().getId());
                     if (stationClient == null) return;
 
                     ScheduledTask task = stationClient.getScheduledTask();

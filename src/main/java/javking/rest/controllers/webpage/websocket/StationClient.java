@@ -25,15 +25,14 @@ import java.util.UUID;
 
 public class StationClient {
     private String userId;
-    private final String stationId;
+    private String stationId;
+    private String socketId;
     private Guild guild;
     private CommandContext context;
     private CommandExecutionQueueManager executionQueueManager;
     private AudioManager audioManager;
 
     private final UUID uuid;
-    private final String socketId;
-    private final RateLimiterConfig config;
     private final RateLimiter rateLimiter;
 
     private final ScheduledTask scheduledTask;
@@ -45,12 +44,14 @@ public class StationClient {
     public StationClient(String userId, UUID uuid, String stationId, String socketId) {
         this.userId = userId;
         this.stationId = stationId;
-        setGuild(JavKing.get().getShardManager().getGuildById(stationId));
-        this.uuid = uuid;
+        guild = JavKing.get().getShardManager().getGuildById(stationId);
 
         this.socketId = socketId;
+        this.uuid = uuid;
 
-        config = RateLimiterConfig.custom()
+        // max number of calls allowed in time period
+        // time period for rate limit
+        RateLimiterConfig config = RateLimiterConfig.custom()
                 .limitForPeriod(1) // max number of calls allowed in time period
                 .limitRefreshPeriod(Duration.ofSeconds(2)) // time period for rate limit
                 .build();
@@ -62,6 +63,11 @@ public class StationClient {
 
     public String getStationId() {
         return stationId;
+    }
+
+    public StationClient setStationId(String stationId) {
+        this.stationId = stationId;
+        return this;
     }
 
     public Guild getGuild() {
@@ -102,6 +108,11 @@ public class StationClient {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public StationClient setSocketId(String socketId) {
+        this.socketId = socketId;
+        return this;
     }
 
     public String getSocketId() {
