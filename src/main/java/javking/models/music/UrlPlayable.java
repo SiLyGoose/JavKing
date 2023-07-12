@@ -102,7 +102,7 @@ public class UrlPlayable implements Playable {
         JSONObject requesterData = new JSONObject();
         requesterData.put("avatar", getRequester().getAvatarUrl());
         requesterData.put("id", getRequester().getId());
-        requesterData.put("username", getRequester().getName().concat("#").concat(getRequester().getDiscriminator()));
+        requesterData.put("username", getRequester().getName());
 
         JSONObject trackData = new JSONObject();
         trackData.put("requester", requesterData);

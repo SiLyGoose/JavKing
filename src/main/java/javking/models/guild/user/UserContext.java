@@ -1,6 +1,7 @@
 package javking.models.guild.user;
 
 import javking.JavKing;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.PrivateChannel;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -73,7 +75,6 @@ public class UserContext implements User, Serializable {
 
         setName(user.getName());
         setGlobalName(user.getGlobalName());
-        setDiscriminator(user.getDiscriminator());
         setAsMention(user.getAsMention());
 
         setIsBot(user.isBot());
@@ -88,7 +89,7 @@ public class UserContext implements User, Serializable {
     @NotNull
     @Override
     public String getName() {
-        return name;
+        return globalName == null ? name : globalName;
     }
 
     public void setName(String name) {
@@ -107,16 +108,16 @@ public class UserContext implements User, Serializable {
 
     @NotNull
     @Override
+    @Deprecated
+    @ForRemoval
     public String getDiscriminator() {
         return discriminator;
     }
 
-    public void setDiscriminator(String discriminator) {
-        this.discriminator = discriminator;
-    }
-
     @NotNull
     @Override
+    @Deprecated
+    @ForRemoval
     public String getAsTag() {
         return name + "#" + discriminator;
     }
@@ -165,7 +166,8 @@ public class UserContext implements User, Serializable {
     @NotNull
     @Override
     public String getDefaultAvatarId() {
-        return String.valueOf(Integer.parseInt(discriminator) % 5);
+        BigInteger userId = new BigInteger(id);
+        return userId.shiftRight(22).mod(BigInteger.valueOf(6)).toString();
     }
 
     @NotNull

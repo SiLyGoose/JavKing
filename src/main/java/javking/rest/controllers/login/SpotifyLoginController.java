@@ -45,7 +45,7 @@ public class SpotifyLoginController {
             spotifyApi.setAccessToken(codeCredentials.getAccessToken());
             spotifyApi.setRefreshToken(codeCredentials.getRefreshToken());
 
-            System.out.println("Login successful from user " + login.getUser().getAsTag() +
+            System.out.println("Login successful from user " + login.getUser().getName() +
                     " | Expires in: " + codeCredentials.getExpiresIn());
         } catch (IOException | ParseException | SpotifyWebApiException e) {
             e.printStackTrace();

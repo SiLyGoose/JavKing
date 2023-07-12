@@ -52,13 +52,13 @@ public class leavecleanup extends AbstractCommand {
 
         assert voiceChannel != null;
         List<String> memberListTag = new ArrayList<>();
-        voiceChannel.getMembers().forEach(member -> memberListTag.add(member.getUser().getAsTag()));
+        voiceChannel.getMembers().forEach(member -> memberListTag.add(member.getUser().getName()));
 
         int counter = 0;
 
         for (int i = 1; i < queue.size(); i++) {
             Playable track = queue.get(i);
-            if (memberListTag.contains(track.getRequester().getAsTag())) {
+            if (memberListTag.contains(track.getRequester().getName())) {
                 replacement.add(i);
             } else counter++;
         }
