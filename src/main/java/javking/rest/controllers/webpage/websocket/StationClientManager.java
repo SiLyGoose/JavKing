@@ -84,12 +84,14 @@ public class StationClientManager {
                 .orElse(null);
     }
 
+    public static void closeStationTasks(String stationId) {
+        stationClients.values().parallelStream()
+                .filter(client -> client.getStationId().equals(stationId))
+                .forEach(client -> client.getScheduledTask().stopScheduledTask());
+    }
+
     static class StationIdentifier {
         private final String userId, stationId, socketId;
-
-        public StationIdentifier(String stationId, String userId) {
-            this(stationId, userId, null);
-        }
 
         public StationIdentifier(String stationId, String userId, String socketId) {
             this.userId = userId;

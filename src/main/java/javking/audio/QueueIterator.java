@@ -256,11 +256,7 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
                 lingerDelayMap.put(playback.getGuild().getId(), scheduler.schedule(() -> {
                     playback.leaveChannel();
 //                        remove timeUpdate events since bot has left channel
-                    StationClient stationClient = StationClientManager.getStationClientByGuild(playback.getGuild().getId());
-                    if (stationClient == null) return;
-
-                    ScheduledTask task = stationClient.getScheduledTask();
-                    if (task.isInProgress()) task.stopScheduledTask();
+                    StationClientManager.closeStationTasks(playback.getGuild().getId());
                 }, 5, TimeUnit.MINUTES));
             }
         } else {
