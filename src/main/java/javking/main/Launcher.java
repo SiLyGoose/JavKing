@@ -185,7 +185,7 @@ public class Launcher {
                         try {
                             playables.set(i, youTubeService.resolveYouTubeVideo(video.getPlaybackUrl(),
                                     video.getUserContext(), guild));
-                        } catch (IOException | UnavailableResourceException | NoResultsFoundException e) {
+                        } catch (IOException | UnavailableResourceException e) {
                             e.printStackTrace();
                         }
                     }
