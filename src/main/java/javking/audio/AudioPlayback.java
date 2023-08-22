@@ -99,13 +99,7 @@ public class AudioPlayback implements Serializable {
 
     public void remove(List<Integer> indices) {
         AtomicInteger offset = new AtomicInteger(0);
-        indices.forEach(index -> {
-            AudioQueue audioQueue = getAudioQueue();
-            Playable playable = audioQueue.getTrack(index - offset.getAndIncrement());
-            int trackIndex = audioQueue.getTracks().indexOf(playable);
-
-            audioQueue.remove(trackIndex);
-        });
+        indices.forEach(index -> audioQueue.remove(index - offset.getAndIncrement()));
     }
 
     public boolean isDjOnly() {

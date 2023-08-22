@@ -117,6 +117,13 @@ public class AudioManager implements Serializable {
 
     public void startPlaying(Guild guild, boolean resumePaused) {
         AudioPlayback playback = getPlaybackForGuild(guild);
+//        audio buffers from loaded location until seek position is loaded
+        playerManager.setUseSeekGhosting(true);
+//        time before player automatically disconnects
+//        playerManager.setPlayerCleanupThreshold(300000L);
+//        playerManager.setTrackStuckThreshold(5000);
+        playerManager.setItemLoaderThreadPoolSize(Runtime.getRuntime().availableProcessors());
+        playerManager.setFrameBufferDuration(500);
 
         QueueIterator iterator = new QueueIterator(playback, this);
         playback.setCurrentQueueIterator(iterator);

@@ -28,7 +28,7 @@ public class VoiceMember {
         return userChannel;
     }
 
-    public void setUserChannel(UserChannel userChannel) {
+    public VoiceMember setUserChannel(UserChannel userChannel) {
         if (userChannel == null) {
             userChannel = new UserChannel();
             userChannel.setVoiceId(null);
@@ -36,6 +36,7 @@ public class VoiceMember {
             userChannel.setBotJoinable(false);
         }
         this.userChannel = userChannel;
+        return this;
     }
 
     public BotChannel getBotChannel() {
@@ -43,7 +44,7 @@ public class VoiceMember {
         return botChannel;
     }
 
-    public void setBotChannel(BotChannel botChannel) {
+    public VoiceMember setBotChannel(BotChannel botChannel) {
         if (botChannel == null) {
             botChannel = new BotChannel();
             botChannel.setBotVoiceId(null);
@@ -51,5 +52,31 @@ public class VoiceMember {
             botChannel.setBotSpeakable(false);
         }
         this.botChannel = botChannel;
+        return this;
+    }
+
+    public JSONObject toJSONObject() {
+        JSONObject data = new JSONObject();
+//        user channel object
+        JSONObject uChObj = new JSONObject();
+//        bot user channel object
+        JSONObject bUChObj = new JSONObject();
+
+        if (userChannel != null) {
+            uChObj.put("voiceId", userChannel.getVoiceId());
+            uChObj.put("voiceName", userChannel.getVoiceName());
+            uChObj.put("botJoinable", userChannel.isBotJoinable());
+        }
+
+        if (botChannel != null) {
+            bUChObj.put("botVoiceId", botChannel.getBotVoiceId());
+            bUChObj.put("botVoiceName", botChannel.getBotVoiceName());
+            bUChObj.put("botSpeakable", botChannel.isBotSpeakable());
+        }
+
+        data.put("userChannel", userChannel == null ? JSONObject.NULL : uChObj);
+        data.put("botChannel", botChannel == null ? JSONObject.NULL : bUChObj);
+
+        return data;
     }
 }

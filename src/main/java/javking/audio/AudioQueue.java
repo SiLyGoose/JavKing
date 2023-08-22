@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.User;
 import org.json.JSONObject;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +49,22 @@ public class AudioQueue implements Serializable {
 //        previousQueue.add(playable);
         if (shuffled && !shuffledQueue.isEmpty()) shuffledQueue.remove(shuffledQueue.get(index));
 
+        if (index < currentTrack) {
+            decrementShuffledList(index);
+            currentTrack -= 1;
+        }
+
         return playable;
+    }
+
+    public void decrementShuffledList(int index) {
+        List<Integer> updatedList = shuffledQueue.parallelStream()
+                .filter(i -> i > index)
+                .map(i -> i - 1)
+                .collect(Collectors.toList());
+
+        shuffledQueue.clear();
+        shuffledQueue.addAll(updatedList);
     }
 
     public void iterate() {
@@ -90,7 +106,7 @@ public class AudioQueue implements Serializable {
         return getTrack(nextPosition());
     }
 
-    private int previousPosition() {
+    public int previousPosition() {
         if (currentTrack > 0) {
             return currentTrack - 1;
         } else {
@@ -98,7 +114,7 @@ public class AudioQueue implements Serializable {
         }
     }
 
-    private int nextPosition() {
+    public int nextPosition() {
         if (currentTrack < currentQueue.size() - 1) {
             return currentTrack + 1;
         } else {
@@ -139,7 +155,7 @@ public class AudioQueue implements Serializable {
         return currentQueue.get(getCurrentTrackNumber());
     }
 
-//    currentTrackNumber only used when getting current playable
+    //    currentTrackNumber only used when getting current playable
 //    to differentiate between shuffled or not. AudioQueue#getPosition returns
 //    cursor that allows traversal of normalized/shuffled array.
     public int getCurrentTrackNumber() {

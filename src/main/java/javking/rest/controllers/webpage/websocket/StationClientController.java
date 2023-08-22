@@ -5,11 +5,20 @@ import javking.audio.AudioManager;
 import javking.audio.AudioPlayback;
 import javking.audio.AudioQueue;
 import javking.exceptions.UnavailableResourceException;
+import javking.models.music.Playable;
 import javking.rest.controllers.GuildMemberManager;
+import javking.rest.controllers.VoiceMemberManager;
 import javking.rest.payload.data.GuildMember;
+import javking.rest.payload.voice.BotChannel;
+import javking.rest.payload.voice.UserChannel;
+import javking.rest.payload.voice.VoiceMember;
 import javking.templates.Template;
 import javking.templates.Templates;
 import javking.util.TimeConvertingService;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildVoiceState;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -44,6 +53,10 @@ public class StationClientController {
         UUID token = stationSocket.getToken();
         if (!StationClientManager.hasStationClient(token)) return ResponseEntity.ok().build();
 
+        StationClient stationClient = StationClientManager.getStationClient(token);
+        if (stationClient != null && stationClient.getScheduledTask().isInProgress())
+            stationClient.getScheduledTask().stopScheduledTask();
+
         StationClientManager.removeStationClient(token, stationSocket.getSocketId());
         return ResponseEntity.ok().build();
     }
@@ -59,6 +72,49 @@ public class StationClientController {
 
 //    @DeleteMapping("/socket.io/remove-client")
 //    public void removeStationClient(@R)
+
+    @PostMapping("/voiceAccessed/{token}/{stationId}")
+    public ResponseEntity<?> stationVoiceAccessed(@PathVariable("token") String token, @PathVariable("stationId") String stationId) {
+        if (!validToken(token)) return ResponseEntity.notFound().build();
+        StationData stationData = new StationData(token);
+        VoiceMember voiceMember = VoiceMemberManager.getVoiceMember(UUID.fromString(token));
+
+        Guild guild = stationData.stationClient.getGuild();
+        if (!guild.getId().equals(stationId)) return ResponseEntity.notFound().build();
+
+//        effectively final variable must be used for lambda expressions
+        final VoiceMember tVoiceMember = voiceMember;
+        if (voiceMember != null && guild.getVoiceChannels().parallelStream().anyMatch(vc -> vc.getId().equals(tVoiceMember.getUserChannel().getVoiceId())))
+            return ResponseEntity.ok(voiceMember);
+
+        String userId = stationData.guildMember.getId();
+        VoiceChannel voiceChannel = guild.getVoiceChannels()
+                .parallelStream()
+                .filter(ch -> ch.getMembers().parallelStream().anyMatch(member -> member.getId().equals(userId)))
+                .findFirst()
+                .orElse(null);
+
+        if (voiceChannel == null) return ResponseEntity.notFound().build();
+
+        VoiceChannel botVoiceChannel;
+        BotChannel botChannel = null;
+        GuildVoiceState botVoiceState = guild.getSelfMember().getVoiceState();
+        if (botVoiceState != null && botVoiceState.inAudioChannel()) {
+            assert botVoiceState.getChannel() != null;
+            try {
+                botVoiceChannel = botVoiceState.getChannel().asVoiceChannel();
+                boolean botSpeakable = guild.getSelfMember().hasPermission(botVoiceChannel, Permission.VOICE_SPEAK);
+                botChannel = new BotChannel(botVoiceChannel.getId(), botVoiceChannel.getName(), botSpeakable);
+            } catch (NullPointerException ignored) {
+            }
+        }
+
+        boolean botJoinable = guild.getSelfMember().hasPermission(voiceChannel, Permission.VOICE_CONNECT);
+        UserChannel userChannel = new UserChannel(voiceChannel.getId(), voiceChannel.getName(), botJoinable);
+
+        voiceMember = new VoiceMember().setUserChannel(userChannel).setBotChannel(botChannel);
+        return ResponseEntity.ok(voiceMember.toJSONObject().toString());
+    }
 
     @PostMapping("/stationAccessed/{token}")
     public ResponseEntity<?> stationAccessed(@PathVariable("token") String token) throws UnavailableResourceException {
@@ -133,12 +189,13 @@ public class StationClientController {
             audioPlayback.stop();
         } else {
 //          website version cannot skip more than one song per click
-            audioQueue.setPosition(audioQueue.getPosition() + 1);
+            int currentPosition = audioQueue.getPosition();
+            audioQueue.setPosition(currentPosition + offset);
             audioManager.startPlaying(stationData.stationClient.getGuild(), false);
         }
 
         assert stationData.guildMember != null;
-        stationData.sendBold(Templates.music.skipped_song.formatFull(stationData.guildMember.getName() + " skipped the current track!"));
+        stationData.sendBold(Templates.music.skipped_song.formatFull(stationData.guildMember.getName() + " skipped " + (offset > 1 ? String.format("to `%s`!", audioQueue.getCurrent().getTitle()) : "the current track!")));
 
         handleQueueMutatorEvent("stationUpdate", stationData.guildMember.getId(), audioPlayback);
         return ResponseEntity.ok().build();
@@ -218,13 +275,16 @@ public class StationClientController {
         AudioPlayback audioPlayback = stationData.audioPlayback;
         AudioQueue audioQueue = audioPlayback.getAudioQueue();
 
-        assert stationData.guildMember != null;
-        index += audioQueue.getPosition();
-        stationData.sendBold(Templates.command.blue_check_mark.formatFull(String.format("%s removed track `%s` at position `%s`", stationData.guildMember.getName(), audioQueue.getTrack(index).getTitle(), index)));
-
+        Playable playable = audioQueue.getTrack(index);
         audioPlayback.remove(index);
 
-        handleQueueMutatorEvent("stationUpdate", stationData.guildMember.getId(), audioPlayback);
+        JSONObject data = new JSONObject();
+        data.put("position", audioQueue.getPosition());
+
+        assert stationData.guildMember != null;
+        stationData.sendBold(Templates.command.blue_check_mark.formatFull(String.format("%s removed track `%s` at position `%s`", stationData.guildMember.getName(), playable.getTitle(), index + 1)));
+        handleQueueMutatorEvent("stationUpdate", stationData.guildMember.getId(), audioPlayback, data);
+
         return ResponseEntity.ok().build();
     }
 

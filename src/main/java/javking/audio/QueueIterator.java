@@ -17,11 +17,13 @@ import javking.rest.controllers.webpage.websocket.StationClient;
 import javking.rest.controllers.webpage.websocket.StationClientManager;
 import javking.templates.Templates;
 import javking.util.YouTube.HollowYouTubeVideo;
+import net.dv8tion.jda.api.entities.Member;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,6 +92,12 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
     @Override
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason reason) {
         if (reason.mayStartNext) {
+            List<Member> members = audioPlayback.getVoiceChannel().getMembers();
+            if (members.size() == 1 && members.contains(audioPlayback.getGuild().getSelfMember())) {
+                audioPlayback.clear(true);
+                return;
+            }
+
             handleAudioEvent(() -> {
                 if (reason == AudioTrackEndReason.LOAD_FAILED) {
                     iterateQueue(audioPlayback, queue, true);
@@ -110,7 +118,12 @@ class QueueIterator extends AudioEventAdapter implements Serializable {
         }
 
         iterateQueue(audioPlayback, queue, true);
-        messageService.sendBold(Templates.command.boom.formatFull("Something went wrong during playback of `" + track.getInfo().title + "`"), audioPlayback.getChannel());
+        if (attemptCount.get() == 10) {
+            try {
+                messageService.sendBold(Templates.command.boom.formatFull("Something went wrong during playback of `" + track.getInfo().title + "`"), audioPlayback.getChannel());
+            } catch (NullPointerException ignored) {
+            }
+        }
 
         handleTrackEvent("trackException", e);
     }
